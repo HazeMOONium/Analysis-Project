@@ -1,0 +1,6 @@
+=== Warehouse Operations Planner — Thread B (AI-Assisted) ===
+    Running Case 4
+
+=== INFEASIBLE ===
+Reason: Order O_VIP misses deadline (dispatch=131.545495, deadline=60.000000).
+Runtime: 4.98 ms
