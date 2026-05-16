@@ -74,6 +74,9 @@ An item with a large delay buffer causes late arrivals if not planned. Enhanced 
 \paragraph{Example D: Infeasible Deadline.}
 A VIP order requires an item whose restock arrival is later than its deadline. Both algorithms report infeasible with a clear reason.
 
+\paragraph{Example E: Edge Case (Not Handled).}
+All remaining orders need item IX, stock is 0, restock arrives later.
+
 \section{Test Results Summary}
 Table~\ref{tab:test-results} summarizes runs for the four built-in cases. Runtime is the total for producing both baseline and enhanced plans in one run.
 

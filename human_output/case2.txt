@@ -1,0 +1,90 @@
+=== Warehouse Operations Planner - Thread A (Human) ===
+    Running Case 2
+
+=== Baseline Greedy (Deadline Only, Naive Restock) ===
+=== FEASIBLE PLAN ===
+
+-- Restock Requests -----------------------
+  RR-0  item=IX  qty=8  shelf=S10  created at0.0  arrives at45.0
+  RR-1  item=IX  qty=1  shelf=S10  created at56.7  arrives at101.7
+  RR-2  item=IX  qty=25  shelf=S10  created at123.4  arrives at168.4
+
+-- Pick Batches -----------------------
+  Batch-0  picker=P1  weight=50.0kg  start=0.0  dispatch=66.0
+    Orders: O166 O121 O140 O101 O109 O105 O32 O133 O146 O145 O86 O173 O89 O70 O107 O13 O17 O144 O132 O168 O48 O24 O128 
+    Route:  D -> S11 -> S44 -> S38 -> S21 -> S19 -> S46 -> S8 -> S60 -> S10 -> S32 -> D
+  Batch-1  picker=P2  weight=49.9kg  start=0.0  dispatch=51.0
+    Orders: O58 O33 O75 O51 O1 O139 O11 O34 O158 O21 O88 O79 O45 O40 O73 O125 O56 O50 
+    Route:  D -> S43 -> S55 -> S29 -> S9 -> D
+  Batch-2  picker=P3  weight=49.7kg  start=0.0  dispatch=56.7
+    Orders: O165 O29 O154 O112 O142 O76 O74 O46 O103 O172 O68 O175 O57 O28 O37 O113 O159 O179 O97 O161 O83 
+    Route:  D -> S59 -> S26 -> S1 -> S48 -> S58 -> S54 -> S41 -> S40 -> S53 -> D
+  Batch-3  picker=P4  weight=49.5kg  start=0.0  dispatch=49.8
+    Orders: O52 O93 O5 O110 O44 O141 O61 O23 O153 O167 O136 O4 O16 O27 O122 
+    Route:  D -> S30 -> S50 -> S33 -> S25 -> S51 -> S57 -> S16 -> S22 -> D
+  Batch-4  picker=P5  weight=54.7kg  start=60.0  dispatch=123.4
+    Orders: O63 O9 O115 O178 O149 O82 O22 O94 O8 O38 O91 O176 O59 O81 O137 O41 O2 O47 O98 O3 O85 O116 O129 
+    Route:  D -> S7 -> S37 -> S12 -> S6 -> S31 -> S3 -> S23 -> S34 -> D
+  Batch-5  picker=P1  weight=49.8kg  start=66.0  dispatch=116.9
+    Orders: O15 O104 O152 O99 O157 O49 O87 O124 O134 O151 O71 O135 O67 O64 
+    Route:  D -> S57 -> S16 -> S29 -> S9 -> S28 -> S45 -> S52 -> S13 -> D
+  Batch-6  picker=P2  weight=50.0kg  start=51.0  dispatch=104.4
+    Orders: O160 O95 O10 O92 O43 O111 O118 O77 O170 O100 O169 O62 O155 O19 O177 O69 O84 
+    Route:  D -> S24 -> S34 -> S53 -> S4 -> S47 -> S52 -> S39 -> S42 -> S10 -> D
+  Batch-7  picker=P3  weight=49.7kg  start=56.7  dispatch=105.9
+    Orders: O180 O36 O108 O163 O114 O150 O96 O126 O42 O120 O60 O138 O162 O102 O12 O30 O18 O80 O35 O39 
+    Route:  D -> S10 -> S20 -> S14 -> S40 -> D
+  Batch-8  picker=P4  weight=49.6kg  start=49.8  dispatch=98.2
+    Orders: O14 O25 O164 O106 O119 O147 O53 O130 O65 O20 O26 O31 
+    Route:  D -> S15 -> S2 -> S42 -> S23 -> S35 -> S22 -> S32 -> D
+  Batch-9  picker=P5  weight=29.3kg  start=123.4  dispatch=173.2
+    Orders: O7 O171 O55 O123 O143 O148 O131 O117 O127 
+    Route:  D -> S36 -> S56 -> S22 -> S32 -> S49 -> S5 -> S13 -> D
+  Batch-14  picker=P5  weight=36.0kg  start=173.2  dispatch=206.5
+    Orders: O78 O6 O156 O54 O66 O90 O174 O72 
+    Route:  D -> S10 -> D
+
+
+=== Enhanced Greedy (Score + Lead-Time Restock) ===
+=== FEASIBLE PLAN ===
+
+-- Restock Requests -----------------------
+  RR-0  item=IX  qty=33  shelf=S10  created at0.0  arrives at45.0
+  RR-1  item=IX  qty=22  shelf=S10  created at1.0  arrives at46.0
+
+-- Pick Batches -----------------------
+  Batch-0  picker=P1  weight=49.6kg  start=0.0  dispatch=56.9
+    Orders: O75 O45 O180 O150 O120 O60 O90 O30 O165 O135 O105 O15 O104 O27 O152 O65 
+    Route:  D -> S43 -> S55 -> S57 -> S16 -> S38 -> S10 -> S59 -> S52 -> S22 -> D
+  Batch-1  picker=P2  weight=49.8kg  start=0.0  dispatch=66.3
+    Orders: O11 O34 O158 O21 O79 O88 O40 O58 O33 O51 O1 O118 O77 O83 O10 O129 O92 O43 O111 O160 O166 O121 O140 O59 
+    Route:  D -> S11 -> S24 -> S34 -> S53 -> S43 -> S55 -> S31 -> D
+  Batch-2  picker=P3  weight=49.9kg  start=0.0  dispatch=67.3
+    Orders: O20 O122 O26 O123 O103 O172 O68 O100 O169 O32 O133 O146 O145 O177 O69 O119 O147 O116 O81 
+    Route:  D -> S22 -> S48 -> S23 -> S42 -> S21 -> S47 -> S31 -> D
+  Batch-3  picker=P4  weight=49.6kg  start=0.0  dispatch=60.1
+    Orders: O63 O53 O71 O91 O137 O41 O2 O47 O176 O159 O179 O28 O113 O37 O7 O89 
+    Route:  D -> S7 -> S23 -> S45 -> S46 -> S36 -> S54 -> S41 -> S6 -> S31 -> D
+  Batch-4  picker=P5  weight=54.7kg  start=60.0  dispatch=108.3
+    Orders: O132 O24 O144 O84 O36 O108 O168 O48 O78 O6 O156 O114 O54 O96 O126 O42 O138 O66 O17 
+    Route:  D -> S10 -> S60 -> D
+  Batch-5  picker=P1  weight=49.9kg  start=56.9  dispatch=112.6
+    Orders: O157 O99 O49 O153 O136 O4 O167 O98 O3 O85 O107 O70 O13 O109 O101 O95 O112 O76 
+    Route:  D -> S11 -> S44 -> S3 -> S57 -> S16 -> S24 -> S8 -> S26 -> D
+  Batch-6  picker=P2  weight=50.0kg  start=66.3  dispatch=113.7
+    Orders: O52 O93 O5 O73 O125 O56 O87 O162 O174 O72 O102 O12 O18 O115 O149 O94 
+    Route:  D -> S30 -> S29 -> S10 -> S37 -> S12 -> D
+  Batch-7  picker=P3  weight=49.5kg  start=67.3  dispatch=128.4
+    Orders: O139 O80 O25 O164 O106 O35 O131 O161 O39 O97 O8 O38 O82 O22 O142 O50 
+    Route:  D -> S43 -> S12 -> S41 -> S40 -> S20 -> S14 -> S37 -> S26 -> S9 -> S2 -> S49 -> D
+  Batch-8  picker=P4  weight=49.5kg  start=60.1  dispatch=125.0
+    Orders: O9 O178 O134 O151 O124 O173 O175 O57 O117 O171 O74 O46 O29 O154 O130 O64 O61 
+    Route:  D -> S59 -> S35 -> S13 -> S46 -> S58 -> S5 -> S36 -> S1 -> S9 -> S28 -> S37 -> S7 -> S51 -> D
+  Batch-9  picker=P5  weight=55.0kg  start=108.3  dispatch=170.3
+    Orders: O128 O31 O143 O148 O163 O19 O67 O62 O155 O127 O170 O14 O110 O16 O86 O44 
+    Route:  D -> S33 -> S50 -> S39 -> S52 -> S13 -> S19 -> S15 -> S4 -> S10 -> S32 -> S57 -> D
+  Batch-10  picker=P1  weight=10.5kg  start=112.6  dispatch=136.6
+    Orders: O23 O141 O55 
+    Route:  D -> S25 -> S51 -> S56 -> D
+
+Runtime: 78.67 ms

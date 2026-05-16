@@ -1,4 +1,4 @@
-﻿=== Warehouse Operations Planner - Thread A (Human) ===
+=== Warehouse Operations Planner - Thread A (Human) ===
     Running Case 1
 
 === Baseline Greedy (Deadline Only, Naive Restock) ===
@@ -165,4 +165,4 @@
     Orders: O83 
     Route:  D -> S21 -> S8 -> S29 -> D
 
-Runtime: 67.38 ms
+Runtime: 65.02 ms

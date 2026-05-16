@@ -1,0 +1,11 @@
+=== Warehouse Operations Planner - Thread A (Human) ===
+    Running Case 4
+
+=== Baseline Greedy (Deadline Only, Naive Restock) ===
+=== INFEASIBLE ===
+Reason: Order O_VIP could not be assigned.
+
+=== Enhanced Greedy (Score + Lead-Time Restock) ===
+=== INFEASIBLE ===
+Reason: Order O_VIP could not be assigned.
+Runtime: 31.68 ms

@@ -5,7 +5,7 @@
  * Algorithm: Score-based greedy with lead-time restock checks
  *
  * Build:  g++ -std=c++17 human_solution.cpp -o human_solution
- * Run:    ./human_solution <case_number>   (1 | 2 | 3 | 4)
+ * Run:    ./human_solution <case_number>   (1 | 2 | 3 | 4 | 5)
 */
 
 #include <iostream>
@@ -934,6 +934,58 @@ WarehousePlanner build_case4() {
     return wp;
 }
 
+WarehousePlanner build_case5() {
+    // Case 5: all remaining orders need IX, shelf stock is zero,
+    // and the restock arrives later. This exposes the stall where
+    // no batch can be built before the restock arrives.
+    mt19937 rng(SEED);
+    WarehousePlanner wp;
+
+    vector<string> nodes = {"D", "V", "S1"};
+    wp.graph.add_nodes(nodes);
+
+    wp.graph.add_edge("D", "V", 10);
+    wp.graph.add_edge("D", "S1", 5);
+    wp.graph.add_edge("V", "S1", 5);
+    wp.graph.floyd_warshall();
+
+    Item ix;
+    ix.id = "IX";
+    ix.shelf = "S1";
+    ix.stock = 0;
+    ix.weight = 1.0;
+    ix.itype = ItemType::NORMAL;
+    ix.price = 20.0;
+    wp.items["IX"] = ix;
+
+    wp.pickers = {
+        {"P1", 0, 480, 50},
+    };
+
+    for (int o = 1; o <= 3; ++o) {
+        Order ord;
+        ord.id = "O" + to_string(o);
+        ord.release = 0;
+        ord.deadline = 200;
+        ord.priority = Priority::NORMAL;
+        ord.pack_time = 2.0;
+        ord.lines.push_back({"IX", 5});
+        wp.orders.push_back(ord);
+    }
+
+    RestockInfo ri;
+    ri.item_id = "IX";
+    ri.reserve = 100;
+    ri.prep_time = 20;
+    ri.delivery_time = 60;   // arrives at 80
+    ri.max_weight = 50;
+    ri.delay_risk = 0.0;
+    ri.delay_buffer = 0.0;
+    wp.restock_info["IX"] = ri;
+
+    return wp;
+}
+
 // Main
 
 int main(int argc, char* argv[]) {
@@ -949,8 +1001,9 @@ int main(int argc, char* argv[]) {
         case 2: wp = build_case2(); break;
         case 3: wp = build_case3(); break;
         case 4: wp = build_case4(); break;
+        case 5: wp = build_case5(); break;
         default:
-            cerr << "Unknown case. Use 1–4.\n";
+            cerr << "Unknown case. Use 1-5.\n";
             return 1;
     }
 

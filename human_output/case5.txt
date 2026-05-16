@@ -1,0 +1,11 @@
+=== Warehouse Operations Planner - Thread A (Human) ===
+    Running Case 5
+
+=== Baseline Greedy (Deadline Only, Naive Restock) ===
+=== INFEASIBLE ===
+Reason: Order O1 could not be assigned.
+
+=== Enhanced Greedy (Score + Lead-Time Restock) ===
+=== INFEASIBLE ===
+Reason: Order O1 could not be assigned.
+Runtime: 0.03 ms

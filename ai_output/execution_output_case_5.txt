@@ -1,0 +1,6 @@
+=== Warehouse Operations Planner — Thread B (AI-Assisted) ===
+    Running Case 5
+
+=== INFEASIBLE ===
+Reason: Order O1 could not be assigned (capacity or shift limits).
+Runtime: 0.03 ms
