@@ -7,7 +7,7 @@
 \usepackage{tabularx}
 
 \title{Warehouse Planning: Thread A}
-\author{Hazem \& Yahya}
+\author{Hazem \& Yehia}
 \date{}
 
 \begin{document}
@@ -138,13 +138,6 @@ Feasibility checks: stock, perishable max_wait, capacity, shift, deadline.
 
 \section{Correctness Sketch (More Detail)}
 Each accepted batch respects stock availability at the batch start time (plus restocks applied at or before that time). By checking perishable wait against the last restock arrival and verifying capacity, shift, and deadline bounds, the algorithm only accepts batches that satisfy constraints. Therefore, if the algorithm outputs a plan, it is feasible by construction.
-
-\section{Complexity and Space}
-Let $V$ be nodes, $E$ edges, $M$ orders, $P$ pickers, $B$ batches, and $S$ shelves per batch.
-\begin{itemize}[leftmargin=1.25em]
-    \item Time: Floyd--Warshall $O(V^3)$; sorting $O(M \log M)$; batch selection worst-case $O(M^2)$; routing $O(B S^2)$. In practice, $S$ is small and batching is near-linear for typical constraints.
-    \item Space: $O(V^2)$ for distances, $O(M)$ for orders, and $O(BS)$ for batch routes.
-\end{itemize}
 
 \section{Industrial Considerations (Extended)}
 \begin{itemize}[leftmargin=1.25em]

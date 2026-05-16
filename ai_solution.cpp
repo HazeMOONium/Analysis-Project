@@ -4,8 +4,8 @@
  *
  * Algorithm: Priority-Driven Greedy with Constraint Propagation
  *
- * Build:  g++ -o warehouse_planner warehouse_planner.cpp
- * Run:    ./warehouse_planner <case_number>   (1 | 2 | 3 | 4)
+ * Build:  g++ -o ai_solution.cpp
+ * Run:    ./ai_solution <case_number>   (1 | 2 | 3 | 4)
  *
  * Human edits documented in Thread B report (see comments marked "Human edit:").
  */
