@@ -93,7 +93,9 @@ The weights are set heuristically: w1 = 0.35, w2 = 0.20, w3 = 0.25, w4 = 0.1, an
 		- continue
 	* attempt to add the order to the picker's current batch:
 		- check capacity with current batch weight
-		- if it does not fit, finalize current batch and start a new one
+		- among feasible candidates, select the one maximizing:
+		  score - lambda * normalizedDistanceToCurrent (lambda = 0.2)
+		- if none fit, finalize current batch and start a new one
 	* when a batch is finalized or a new batch is started:
 		- compute shelves = union of shelves in batch
 		- route = nearestNeighborRoute(shelves, start=D)

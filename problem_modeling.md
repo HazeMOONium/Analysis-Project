@@ -10,4 +10,6 @@ Orders arrive with release times and deadlines. Each order has lines (item and q
 
 Workers (pickers) operate in shifts with limited capacity per trip. A picker cannot carry more than a maximum weight, and cannot stay past shift end except for a limited overtime buffer. A batch of orders assigned to a picker must start after the picker is available and after all order release times. The batch must finish before the overtime limit and dispatch before each order deadline.
 
+To keep planning realistic, Mr Mekhaimer assumes that all orders for the next day are known in advance, travel times are fixed, and time is measured in minutes. Initial stock is available at time 0, and any restock only increases stock when it arrives. Perishable items must be picked within their max wait time counted from the last restock arrival (or time 0 for initial stock). Each order is placed in exactly one batch and each batch is handled by one picker.
+
 If the plan satisfies all constraints, it outputs the list of restock requests and pick batches, with times, routes, and stock changes. If not, it must report infeasibility with a clear reason such as insufficient reserve stock, a missed deadline, a stock violation, or an overtime limit breach.

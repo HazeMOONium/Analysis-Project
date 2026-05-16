@@ -349,6 +349,7 @@ private:
 
         struct ScoredOrder { Order* order; double score; };
         vector<ScoredOrder> sorted;
+        map<string, double> order_score;
         FeatureRange r_priority, r_slack, r_stock, r_handle, r_price;
 
         for (auto& o : orders) {
@@ -389,6 +390,7 @@ private:
 
             if (!use_enhanced) {
                 sorted.push_back({&o, 0.0});
+                order_score[o.id] = 0.0;
                 continue;
             }
 
@@ -400,6 +402,7 @@ private:
 
             double score = 0.35 * p_n + 0.20 * pr_n + 0.25 * u_n - 0.10 * h_n - 0.10 * s_n;
             sorted.push_back({&o, score});
+            order_score[o.id] = score;
         }
 
         if (use_enhanced) {
@@ -439,7 +442,10 @@ private:
 
             while (true) {
                 int best_idx = -1;
-                double best_dist = INF;
+                double best_value = -INF;
+                double max_dist = 0.0;
+                struct Candidate { int idx; double dist; double score; };
+                vector<Candidate> candidates;
 
                 for (int i = 0; i < (int)sorted.size(); ++i) {
                     if (assigned[i]) continue;
@@ -480,9 +486,19 @@ private:
                     double dist = INF;
                     for (auto& shelf : order_shelves(o))
                         dist = min(dist, graph.travel(cur_loc, shelf));
-                    if (dist < best_dist) {
-                        best_dist = dist;
-                        best_idx = i;
+                    max_dist = max(max_dist, dist);
+                    candidates.push_back({i, dist, order_score[o.id]});
+                }
+
+                if (candidates.empty()) break;
+
+                double denom = max(1.0, max_dist);
+                for (auto& c : candidates) {
+                    double dist_norm = c.dist / denom;
+                    double value = c.score - 0.2 * dist_norm;
+                    if (value > best_value) {
+                        best_value = value;
+                        best_idx = c.idx;
                     }
                 }
 

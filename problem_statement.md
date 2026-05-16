@@ -78,3 +78,14 @@ Construct a feasible next-day warehouse operations plan that assigns customer or
 ## Feasibility Output
 - If all constraints are satisfied, output the full plan of restocks and batches.
 - If any constraint fails, report INFEASIBLE with a specific reason (e.g., insufficient reserve stock, missed deadline, stock violation, overtime limit).
+
+## Assumptions
+1. All times are in minutes; release and deadline are fixed inputs and not modified.
+2. The warehouse graph is connected, travel times are deterministic, and all-pairs shortest paths are valid.
+3. Orders are known at planning time and are not split across multiple days.
+4. Each order is assigned to exactly one batch; each batch is executed by one picker.
+5. Picker capacity is the sum of item weights in the batch.
+6. Packing/verification time is applied after picking is complete (at dispatch).
+7. Initial stock is available at time 0; restock arrivals increase stock only at or after their arrival time.
+8. For perishable items, max_wait is measured from the last restock arrival (or time 0 for initial stock) to pick time.
+9. Routing uses a nearest-neighbor heuristic; optimal routing is not required.

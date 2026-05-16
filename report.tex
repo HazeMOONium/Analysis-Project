@@ -1,0 +1,166 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{appendix}
+\usepackage{amsmath}
+
+\title{Warehouse Planning: Greedy Baseline and Enhanced Heuristic}
+\author{Hazem \& Yahya}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Highlights}
+\paragraph{Problem Summary.}
+We construct a feasible next-day plan for warehouse operations. The plan assigns orders to pickers, batches orders into trips, routes each batch through shelves, schedules restocks, and respects deadlines, shift limits, capacity, stock constraints, and perishable handling limits. We target feasibility and reasonable priority handling rather than optimality.
+
+\paragraph{Approach Overview.}
+We provide two greedy strategies:
+\begin{itemize}[leftmargin=1.25em]
+    \item \textbf{Baseline Greedy:} orders sorted only by earliest deadline; restocking is triggered only when stock runs out. This gives a simple, interpretable reference.
+    \item \textbf{Enhanced Greedy:} orders are scored by a weighted linear function of normalized features (priority, slack, stock urgency, expected handling time, and price), then sorted by score (deadline as tie-break). Restocking is scheduled with lead time so items arrive by the first time they are needed, including optional delay buffers for risky items.
+\end{itemize}
+Batching uses a composite rule: starting from dispatch, we repeatedly add the feasible order maximizing $\text{score} - \lambda \cdot \text{normalizedDistance}$ with $\lambda=0.2$. Routes inside each batch are built by a nearest-neighbor tour over required shelves.
+
+\paragraph{Correctness (Feasibility) Argument.}
+The algorithms maintain feasibility through explicit checks:
+\begin{itemize}[leftmargin=1.25em]
+    \item \textbf{Stock feasibility:} A batch is built only if the required quantities are available at the planned start time. Restocks, when scheduled, increase stock only after their arrival time.
+    \item \textbf{Capacity feasibility:} A candidate order is added to a batch only if total weight remains within the picker capacity.
+    \item \textbf{Release and shift feasibility:} A batch start time is the maximum of picker availability and order release; a batch is rejected if its finish time exceeds the picker shift plus overtime limit.
+    \item \textbf{Deadline feasibility:} A batch is rejected if its dispatch time exceeds any order deadline in that batch.
+    \item \textbf{Perishable feasibility:} For perishable items, the elapsed time since the last restock arrival is checked against the maximum allowed wait.
+\end{itemize}
+Because each accepted batch satisfies all constraints, the resulting plan is feasible whenever the algorithm succeeds.
+
+\paragraph{Industrial Considerations.}
+\begin{itemize}[leftmargin=1.25em]
+    \item \textbf{Robustness to delays:} The enhanced method adds buffer time for high-risk restocks, improving deadline compliance in practice.
+    \item \textbf{Operational transparency:} The baseline method is easy to explain; the enhanced method remains interpretable via its weighted score.
+    \item \textbf{Scalability:} The greedy approach scales to large order sets and can be executed daily within typical operational time windows.
+    \item \textbf{Safety and quality:} Perishable and fragile handling time constraints reduce spoilage and damage risk.
+\end{itemize}
+
+\paragraph{Testing Strategy.}
+We test on multiple synthetic cases with increasing scale and difficulty. The cases include: (i) ample stock, (ii) understocked high-demand items requiring restock, (iii) high delay risk requiring buffer, and (iv) an infeasible VIP deadline to validate failure reporting. We compare baseline vs. enhanced outputs for feasibility and lateness differences.
+
+\paragraph{Complexity (High Level).}
+Let $V$ be the number of nodes, $M$ the number of orders, $P$ the number of pickers, and $S$ the number of shelves per batch.
+\begin{itemize}[leftmargin=1.25em]
+    \item Floyd--Warshall for all-pairs shortest paths: $O(V^3)$.
+    \item Sorting orders: $O(M \log M)$.
+    \item Batch construction with score-distance selection: $O(M^2)$.
+    \item Routing per batch (nearest neighbor): $O(S^2)$ per batch.
+\end{itemize}
+Overall, the dominant term is $O(V^3)$ for path preprocessing, followed by order processing and batching.
+
+\newpage
+\appendix
+\section*{Appendix}
+
+\section{Examples and Edge Cases}
+\paragraph{Example A: Sufficient Stock.}
+All orders can be scheduled without restock. Baseline and enhanced produce feasible plans; enhanced tends to group higher-priority orders earlier.
+
+\paragraph{Example B: Understocked Item with Reserve.}
+Baseline triggers restock only after stockout, which can delay the first affected orders. Enhanced schedules restock in advance based on lead time, reducing deadline misses.
+
+\paragraph{Example C: High Delay Risk.}
+An item with a large delay buffer causes late arrivals if not planned. Enhanced uses the buffer to avoid optimistic schedules; baseline often fails with late dispatch.
+
+\paragraph{Example D: Infeasible Deadline.}
+A VIP order requires an item whose restock arrival is later than its deadline. Both algorithms report infeasible with a clear reason.
+
+\section{Test Results Summary}
+Table~\ref{tab:test-results} summarizes runs for the four built-in cases. Runtime is the total for producing both baseline and enhanced plans in one run.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Case & Baseline Feasible & Enhanced Feasible & Baseline Restocks & Enhanced Restocks & Runtime (ms) \\
+\hline
+1 & Yes & Yes & 0 & 0 & 18.58 \\
+2 & Yes & Yes & 3 & 2 & 13.58 \\
+3 & No (unassigned) & Yes & 0 & 8 & 39.13 \\
+4 & No (VIP deadline) & No (VIP deadline) & 0 & 0 & 4.60 \\
+\hline
+\end{tabular}
+\caption{Test results for cases 1--4.}
+\label{tab:test-results}
+\end{table}
+
+\section{Baseline Greedy Pseudocode (Deadline-Only)}
+\begin{verbatim}
+Sort orders by earliest deadline.
+For each picker, track available_time.
+For each order in order list:
+    choose earliest-available picker
+    start_time = max(picker.available_time, order.release)
+    if stock insufficient:
+        place restock request with creation_time = start_time
+        wait until arrival
+    build a batch by adding feasible orders maximizing
+    score - 0.2 * normalizedDistance until capacity or constraints fail
+    compute route via nearest-neighbor shelves
+    if finish_time exceeds shift or deadline, report infeasible
+    update stock and picker availability
+
+after all orders: if any unassigned, infeasible
+
+actions for restock:
+    only triggered when stock is insufficient at start_time
+
+deadlines checked per order in each batch
+
+times and routes computed using all-pairs shortest paths
+\end{verbatim}
+
+\section{Enhanced Greedy Pseudocode (Score + Lead-Time Restock)}
+\begin{verbatim}
+Compute raw features per order: priorityWeight, slack,
+stockUrgency, expectedHandle, orderPrice.
+Normalize features across all orders.
+Score = w1*priority + w2*price + w3*urgency - w4*handle - w5*slack.
+Sort by score desc; deadline is tie-break.
+
+Pre-schedule restocks based on demand shortfall and lead time.
+If an order needs stock earlier than arrival, shift start_time to arrival.
+Apply delay buffer if delay_risk is high.
+
+Batching uses score-distance selection with capacity and feasibility checks.
+Routes computed by nearest-neighbor tour over shelves.
+Feasibility checks: stock, perishable max_wait, capacity, shift, deadline.
+\end{verbatim}
+
+\section{Correctness Sketch (More Detail)}
+Each accepted batch respects stock availability at the batch start time (plus restocks applied at or before that time). By checking perishable wait against the last restock arrival and verifying capacity, shift, and deadline bounds, the algorithm only accepts batches that satisfy constraints. Therefore, if the algorithm outputs a plan, it is feasible by construction.
+
+\section{Complexity and Space}
+Let $V$ be nodes, $E$ edges, $M$ orders, $P$ pickers, $B$ batches, and $S$ shelves per batch.
+\begin{itemize}[leftmargin=1.25em]
+    \item Time: Floyd--Warshall $O(V^3)$; sorting $O(M \log M)$; batch selection worst-case $O(M^2)$; routing $O(B S^2)$. In practice, $S$ is small and batching is near-linear for typical constraints.
+    \item Space: $O(V^2)$ for distances, $O(M)$ for orders, and $O(BS)$ for batch routes.
+\end{itemize}
+
+\section{Industrial Considerations (Extended)}
+\begin{itemize}[leftmargin=1.25em]
+    \item \textbf{Data quality:} Poor estimates of handling times or delay risk reduce schedule accuracy. Periodic calibration from logs is recommended.
+    \item \textbf{Operational fairness:} Picker workloads can be balanced by rotating picker selection or adding workload penalties.
+    \item \textbf{Robustness:} Restock buffers and conservative feasibility checks reduce the probability of late delivery at the cost of more restocks.
+    \item \textbf{Explainability:} The enhanced score remains interpretable because each term reflects a tangible business factor.
+\end{itemize}
+
+\section{Development Notes and Time Log}
+\paragraph{Process Note.}
+After defining the problem and splitting the work across subteams, we found the original problem harder than expected. We made simplifying assumptions and adjusted constraints to keep progress, but later realized we were drifting toward a different problem. We kept the core greedy algorithm and invested effort to adapt it back to the original constraints and assumptions.
+
+\paragraph{Time Log (Approximate).}
+\begin{itemize}[leftmargin=1.25em]
+    \item 4 hours on the first draft of the enhanced solution (first hour focused on understanding the problem and building a baseline).
+    \item 6 hours writing the pseudocode and adapting it to the original problem; this alignment step was the main bottleneck.
+\end{itemize}
+
+\end{document}
