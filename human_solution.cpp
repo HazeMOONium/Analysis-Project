@@ -1,10 +1,10 @@
 /*
- * Warehouse Operations Planning — Thread A (Human-Based)
+ * Warehouse Operations Planning — Thread A (Human)
  * CSCE 2202 – Analysis and Design of Algorithms
  *
- * Algorithm: Priority-Driven Greedy with Constraint Verification
+ * Algorithm: Score-based greedy with lead-time restock checks
  *
- * Build:  g++ -o human_solution.cpp
+ * Build:  g++ -std=c++17 human_solution.cpp -o human_solution
  * Run:    ./human_solution <case_number>   (1 | 2 | 3 | 4)
 */
 
@@ -160,42 +160,6 @@ public:
     }
 };
 
-// Planner
-/*
- * High-level algorithm (AI-suggested, student-verified):
- *
- * Phase 0 – Floyd-Warshall on warehouse graph.
- * Phase 1 – Stock demand analysis: for each item, compute total demand.
- *            Detect items needing restock.
- * Phase 2 – Restock scheduling (greedy, earliest-first):
- *            Compute how many restock deliveries are needed per item.
- *            Set creation_time = 0 (start of day) and propagate arrival_time.
- *            Apply delay buffer for risky items.
- * Phase 3 – Order prioritisation:
- *            Sort orders by (priority DESC, slack ASC), where
- *            slack = deadline − (release + min_possible_pick_time).
- *            VIP > URGENT > NORMAL. Ties broken by earliest deadline.
- * Phase 4 – Batch packing (greedy, capacity-aware):
- *            For each picker (sorted by shift_start), greedily fill batches
- *            respecting weight capacity.  Each batch gets orders whose
- *            total weight ≤ picker capacity.
- * Phase 5 – Route each batch with nearest-neighbour TSP.
- *            Compute pick timeline per batch including service + handle times.
- * Phase 6 – Feasibility validation:
- *            (a) Stock timeline: for every pick event, running stock ≥ 0.
- *            (b) Restock arrivals precede dependent pick events.
- *            (c) Deadlines satisfied (or report lateness).
- *            (d) Picker shift + overtime limits respected.
- * Phase 7 – Output plan or INFEASIBLE with reason.
- *
- * Complexity:
- *   Floyd-Warshall:  O(V^3)
- *   Sort orders:     O(M log M)
- *   Batch packing:   O(M * P)  where P = number of pickers
- *   Route per batch: O(S^2)    where S = shelves per batch
- *   Validation:      O(M * S)
- *   Overall:         O(V^3 + M*P + B*S^2)  where B = number of batches
- */
 
 class WarehousePlanner {
 public:
@@ -671,23 +635,23 @@ void print_plan(const Plan& plan, const WarehousePlanner& planner, const string&
     cout << "\n=== " << title << " ===\n";
     cout << "=== FEASIBLE PLAN ===\n\n";
 
-    cout << "── Restock Requests ──────────────────────────────────\n";
+    cout << "-- Restock Requests -----------------------\n";
     if (plan.restock_requests.empty()) {
-        cout << "  (none required — shelf stock sufficient)\n";
+        cout << "  (none required - shelf stock sufficient)\n";
     }
     for (auto& rr : plan.restock_requests) {
         cout << "  RR-" << rr.id
              << "  item=" << rr.item_id
              << "  qty=" << rr.qty
              << "  shelf=" << rr.shelf
-             << "  created@" << fixed << setprecision(1) << rr.creation_time
-             << "  arrives@" << rr.arrival_time;
+             << "  created at" << fixed << setprecision(1) << rr.creation_time
+             << "  arrives at" << rr.arrival_time;
         if (rr.delay_buffer_used > 0)
             cout << "  [buffer=" << rr.delay_buffer_used << "min]";
         cout << "\n";
     }
 
-    cout << "\n── Pick Batches ──────────────────────────────────────\n";
+    cout << "\n-- Pick Batches -----------------------\n";
     for (auto& b : plan.pick_batches) {
         cout << "  Batch-" << b.id
              << "  picker=" << b.picker_id
@@ -698,8 +662,8 @@ void print_plan(const Plan& plan, const WarehousePlanner& planner, const string&
         for (auto& oid : b.order_ids) cout << oid << " ";
         cout << "\n";
         cout << "    Route:  D";
-        for (auto& s : b.shelf_sequence) cout << " → " << s;
-        cout << " → D\n";
+        for (auto& s : b.shelf_sequence) cout << " -> " << s;
+        cout << " -> D\n";
     }
     cout << "\n";
 }
@@ -976,7 +940,7 @@ int main(int argc, char* argv[]) {
     int case_num = 1;
     if (argc > 1) case_num = atoi(argv[1]);
 
-    cout << "=== Warehouse Operations Planner — Thread B (AI-Assisted) ===\n";
+    cout << "=== Warehouse Operations Planner - Thread A (Human) ===\n";
     cout << "    Running Case " << case_num << "\n";
 
     WarehousePlanner wp;
